@@ -1,0 +1,138 @@
+html {
+    font-family: Arial;
+    font-size:14pt;
+}
+body {
+    background-color: #00fff1;
+}
+
+header{
+    display: flex;
+}
+
+heading {
+    font-size: 30pt;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    table-layout: fixed;
+    width: 100%;
+}
+
+    table table {
+        border-collapse: collapse;
+        table-layout: fixed;
+        border: 1px solid black;
+        width: 100%;
+    }
+
+        table table th, table table td {
+            border: none;
+            padding: 0px;
+            width: auto;
+        }
+
+tr {
+    height: 50px;
+    border: 1px solid black;
+}
+
+th {
+    background-color: #2bc9c2;
+    text-align: center;
+    border: 3px solid black;
+    white-space: nowrap;
+}
+
+td {
+    border: 1px solid black;
+    border-width: 1px;
+    white-space: nowrap;
+}
+
+    td:hover {
+        background-color: #2bc9c2;
+    }
+
+.input_data {
+    width: 70%;
+    height: 10vh;
+    border-radius: 15px;
+    margin: 10px;
+}
+.button_event {
+    background-color: #2b62d1;
+    color: white;
+    width: 100px;
+    height: 50px;
+    font-size:18pt;
+    margin: 5px;
+}
+.validaton_input {
+    font-size: 14pt;
+    color: #ff0000;
+    font-weight:bold;
+    display:block;
+    margin: 5px 0;
+}
+.container_autorization {
+    width: 30%;
+    height: 60vh;
+    margin: auto;
+    background-color: #2bc9c2;
+    border-radius: 15px;
+    border: 2px solid black;
+    text-align: center;
+}
+.container_personal_data{
+    display: flex;
+    align-items:center;
+    margin-bottom:10px;
+}
+    .container_personal_data label{
+        display:inline-block;
+        width: 25%;
+        text-align: left;
+        margin-left: 10px;
+    }
+
+    .container_personal_data input{
+        padding: 5px;
+        border: 1px solid black;
+        border-radius: 15px;
+        width: 75%;
+        height: 10vh;
+    }
+
+.container_data_person {
+    width: 70%;
+    height: auto;
+    padding: 10px;
+}
+.container_link {
+    width: 30%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+.element_link_column{
+    margin-bottom: 10%;
+}
+.element_link_row {
+    margin-right: 10px;
+   
+}
+.modal:target {
+    display: block;
+}
+
+
+/*
+    #00fff1 - бирюзовый
+    #2bc9c2 - серый
+    #2b62d1 - синий
+    #ff0000 - красный
+*/

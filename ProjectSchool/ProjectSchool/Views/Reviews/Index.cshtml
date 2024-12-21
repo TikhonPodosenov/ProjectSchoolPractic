@@ -1,0 +1,88 @@
+﻿@model IEnumerable< ProjectSchool.Models.Reviews>
+@{
+    ViewData["Title"] = "Отзывы";
+    List<string> Posts = @ViewBag.Posts;
+}
+
+@section Header {
+    <heading style="flex:1; text-align: center; margin:0;">Отзывы</heading>
+
+    <div style="display: flex; float: right; padding: 10px; width: 60%;">
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicMagazine">Электронный дневник</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicSchedule">Расписание</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicNews">Новости</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Teachers">Учителя</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicProfile">Профиль</a>
+        </nav>
+    </div>
+}
+
+<div style="display: flex;">
+    <div style="width: 50%; text-align: center;">
+        <button type="button" class="button_event" style="margin-top: auto; width: 120px" data-toggle="modal" data-target="#addReviewModal">Добавить</button>
+    </div>
+    <div style="width: 50%; text-align: center;">
+        @{
+            <form method="get">
+                <label for="Post">Выберите должность:</label>
+                <select id="post" name="postId" style="width: calc(100% - 200px); height: 50px;" onchange="this.form.submit()">
+                    <option value="">Все должности</option>
+                    @if (Posts != null)
+                    {
+                        foreach (var review in Posts)
+                        {
+                            <option value="@review">@review</option>
+                        }
+                    }
+                </select>
+            </form>
+        }
+    </div>
+</div>
+
+<div>
+    <table>
+        <tr>
+            <th>Дата</th>
+            <th>Должность</th>
+            <th>Отзыв</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DateTime</td>
+                <td>@item.Post</td>
+                <td>@item.Review</td>
+            </tr>
+        }
+    </table>
+</div>
+<div class="modal fade" id="addReviewModal" tabindex="-1" role="dialog" aria-labelledby="addReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" >
+        <div class="modal-content" style="background-color: #00fff1;">
+            <div class="modal-body">
+                <form method="post" >
+                    <div class="form-group">
+                        <label for="review">Отзыв:</label>
+                        <textarea class="form-control" id="review" name="review" rows="3" required></textarea>
+                        <input type="hidden" name="dateTime" value="@DateTime.Now" />
+                        <input type="hidden" name="post" value="@ViewBag.Post" />
+                    </div>
+                    <div style="text-align: center;">
+                        <button type="button" class="button_event" data-dismiss="modal" style="width: 45%;">Отмена</button>
+                        <button type="submit" class="button_event" style="width: 45%;">Ок</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

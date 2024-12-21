@@ -1,0 +1,25 @@
+﻿@model Home
+@{
+    ViewData["Title"] = "Авторизация";
+}
+
+@section Header {
+    
+}
+
+<div style="display: flex; text-align: center;">
+    <div class="container_autorization">
+        <heading>Авторизация</heading>
+        <form method="post" asp-controller="Home" asp-action="CheckPersonData">
+            <input asp-for="Login" class="input_data" placeholder="Введите логин"/>
+            <span class="validaton_input" asp-validation-for="Login"></span>
+
+            <input type="password" asp-for="Password" class="input_data" placeholder="Введите пароль" />
+            <span class="validaton_input" asp-validation-for="Password"></span>
+
+            <span class="validaton_input" asp-validation-summary="ModelOnly"></span>
+
+            <input type="submit" class="button_event" value="Вход" />
+        </form>
+    </div>
+</div>

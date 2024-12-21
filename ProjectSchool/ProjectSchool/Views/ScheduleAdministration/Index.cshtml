@@ -1,0 +1,267 @@
+﻿@model IEnumerable< ProjectSchool.Models.ScheduleAdministration>
+@{
+    ViewData["Title"] = "Расписание";
+    List<string> Subjects = @ViewBag.Subjects;
+    List<string> Groups = @ViewBag.Groups;
+    List<string> Days = @ViewBag.Days;
+    List<int> Id = @ViewBag.Id;
+}
+
+@section Header {
+    <heading style="flex:1; text-align: center; margin:0;">Расписание</heading>
+    <div style="display: flex; float: right; padding: 10px; width: 60%;">
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicMagazine">Электронный дневник</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicNews">Новости</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Reviews">Отзывы о школе</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Teachers">Учителя</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicProfile">Профиль</a>
+        </nav>
+    </div>
+}
+<div style="display:flex; margin-top: 20px; margin-bottom: 20px;">
+
+    @{
+        <form style="float: left; width: 20%;" method="get">
+            <div style="display: flex; flex-direction: column;">
+            <label for="Subject">Выбрать предмет:</label>
+                <select id="subject" name="subjectId" style="width: 90%; height: 50px;" onchange="this.form.submit()">
+                    <option value="">Все предметы</option>
+                    @if (Subjects != null)
+                    {
+                        foreach (var subject in Subjects)
+                        {
+                            <option value="@subject">@subject</option>
+                        }
+                    }
+                </select>
+            </div>
+        </form>
+        <form style="flex:1; width: 20%;" method="get">
+            <div style="display: flex; flex-direction: column;">
+            <label for="Group">Выбрать класс:</label>
+                <select id="group" name="groupId" style="width: 90%; height: 50px;" onchange="this.form.submit()">
+                    <option value="">Все классы</option>
+                    @if (Groups != null)
+                    {
+                        foreach (var group in Groups)
+                        {
+                            <option value="@group">@group</option>
+                        }
+                    }
+                </select>
+            </div>
+        </form>
+        <form style="float: right; width: 20%;" method="get">
+            <div style="display: flex; flex-direction: column;">
+            <label for="Day">Выбрать день недели:</label>
+                <select id="day" name="dayId" style="width: 90%; height: 50px;" onchange="this.form.submit()">
+                    <option value="">Все дни</option>
+                    @if (Days != null)
+                    {
+                        foreach (var day in Days)
+                        {
+                            <option value="@day">@day</option>
+                        }
+                    }
+                </select>
+            </div>
+        </form>
+    }
+    <button type="button" class="button_event" style="margin-top: auto; width: 120px" data-toggle="modal" data-target="#addScheduleModal">Добавить</button>
+    <button type="button" class="button_event" style="margin-top: auto; width: 250px" data-toggle="modal" data-target="#updateScheduleModal">Изменить/удалить</button>
+</div>
+
+<div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Класс</th>
+                <th>№</th>
+                @foreach (var day in Days)
+                {
+                    <th>@day</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Groups != null)
+            {
+                @foreach (var group in Groups)
+                {
+                    bool firstRow = true;
+                    var groupSchedule = Model
+                    .Where(i => i.Group == group)
+                    .OrderBy(i => i.NumberSubject)
+                    .ToList();
+
+                    @foreach (var scheduleItem in groupSchedule)
+                    {
+                        <tr>
+                            @if (firstRow)
+                            {
+                                <td rowspan="@groupSchedule.Count()">@group</td>
+                                { firstRow = false; }
+                            }
+                            <td>@scheduleItem.NumberSubject</td>
+                            @foreach (var day in Days)
+                            {
+                                <td>
+                                    @if (Model != null)
+                                    {
+                                        var subjectItem = Model.FirstOrDefault(item => item.Group == group && item.Day == day && item.NumberSubject == scheduleItem.NumberSubject);
+                                        if (subjectItem != null)
+                                        {
+                                            @subjectItem.Subject
+                                            ;
+                                        }
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="addScheduleModal" tabindex="-1" role="dialog" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: #00fff1;">
+            <div class="modal-body">
+                <form method="post" asp-action="AddSchedule" asp-controller="ScheduleAdministration">
+                    <div class="form-group">
+                        <label for="group">Выбрать класс:</label>
+                        <select id="group" name="Group" style="width:90%; height: 50px;">
+
+                            @if (Groups != null)
+                            {
+                                foreach (var group in Groups)
+                                {
+                                    <option value="@group">@group</option>
+                                }
+                            }
+                        </select>
+                        <label for="day">Выбрать день недели:</label>
+                        <select id="day" name="Day" style="width:90%; height: 50px;">
+
+                            @if (Days != null)
+                            {
+                                foreach (var day in Days)
+                                {
+                                    <option value="@day">@day</option>
+                                }
+                            }
+                        </select>
+                        <label for="numberSubject">Выбрать номер урока:</label>
+                        <select id="numberSubject" name="NumberSubject" style="width: 90%; height: 50px;">
+
+                            @for(int i = 1; i<8; i++)
+                            {
+                                <option value=@i>@i</option>
+                            }
+                        </select>
+                        <label for="Subject">Выбрать предмет:</label>
+                        <select id="subject" name="Subject" style="width: 90%; height: 50px;">
+ 
+                            @if (Subjects != null)
+                            {
+                                foreach (var subject in Subjects)
+                                {
+                                    <option value="@subject">@subject</option>
+                                }
+                            }
+                        </select>
+
+                    </div>
+                    <div style="text-align: center;">
+                        <button type="button" class="button_event" data-dismiss="modal" style="width: 45%;">Отмена</button>
+                        <button type="submit" class="button_event" style="width: 45%;">Ок</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateScheduleModal" tabindex="-1" role="dialog" aria-labelledby="updateScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: #00fff1;">
+            <div class="modal-body">
+                <form method="post" asp-action="UpdateSchedule" asp-controller="ScheduleAdministration">
+                    <div class="form-group">
+                        <label for="id">Выбрать id:</label>
+                        <select id="id" name="Id" style="width: 90%; height: 50px;" >
+
+                            @if (Id != null)
+                            {
+                                foreach (var id in Id)
+                                {
+                                    <option value="@id">@id</option>
+                                }
+                            }
+                        </select>
+                        <label for="group">Выбрать класс:</label>
+                        <select id="group" name="group" style="width: 90%; height: 50px;" >
+
+                            @if (Groups != null)
+                            {
+                                foreach (var group in Groups)
+                                {
+                                    <option value="@group">@group</option>
+                                }
+                            }
+                        </select>
+                        <label for="day">Выбрать день недели:</label>
+                        <select id="day" name="Day" style="width: 90%; height: 50px;">
+
+                            @if (Days != null)
+                            {
+                                foreach (var day in Days)
+                                {
+                                    <option value="@day">@day</option>
+                                }
+                            }
+                        </select>
+                        <label for="numberSubject">Выбрать номер урока:</label>
+                        <select id="numberSubject" name="NumberSubject" style="width: 90%; height: 50px;">
+
+                            @for (int i = 1; i < 8; i++)
+                            {
+                                <option value=@i>@i</option>
+                            }
+                        </select>
+                        <label for="Subject">Выбрать предмет:</label>
+                        <select id="subject" name="Subject" style="width: 90%; height: 50px;">
+
+                            @if (Subjects != null)
+                            {
+                                foreach (var subject in Subjects)
+                                {
+                                    <option value="@subject">@subject</option>
+                                }
+                            }
+                        </select>
+
+                </div>
+                <div style="text-align: center;">
+                        <button type="submit" name="action" value="delete" class="button_event" style="width: 45%;">Удалить</button>
+                        <button type="submit" name="action" value="update"  class="button_event" style="width: 45%;">Изменить</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                      

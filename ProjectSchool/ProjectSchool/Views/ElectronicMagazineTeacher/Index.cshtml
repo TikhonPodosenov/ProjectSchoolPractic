@@ -1,0 +1,189 @@
+﻿@model IEnumerable< ProjectSchool.Models.ElectronicMagazineTeacher>
+@{
+    ViewData["Title"] = "Электронный журнал";
+    List<string> Students = @ViewBag.Students;
+    List<string> Groups = @ViewBag.Groups;
+    List<DateOnly> Dates = @ViewBag.Dates;
+    decimal totalAverage = 0;
+    int totalFinal = 0;
+    if (Model != null && Model.Any())
+    {
+        totalAverage = Math.Round(Model.Average(x => (decimal)x.Estimation), 2);
+        totalFinal = (int)Math.Round(totalAverage, MidpointRounding.AwayFromZero);
+    }
+}
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    table table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        table table th,
+        table table td {
+            border: 1px solid black;
+            padding: 0px;
+            text-align: center;
+        }
+
+            table table th,
+            table table td:hover {
+        background-color: #2bc9c2;
+    }
+
+        table table th {
+            min-width: 50px; 
+            width: 50px;
+        }
+
+    .scrollable-table-container {
+        overflow-x: auto; 
+    }
+</style>
+@section Header {
+    <heading style="flex:1; text-align: center; margin:0;">Электронный журнал</heading>
+    <div style="display: flex; float: right;padding: 10px; width: 60%;">
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlSchedule">Расписание</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlNews">Новости</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Reviews">Отзывы о школе</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Teachers">Учителя</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlProfile">Профиль</a>
+        </nav>
+    </div>
+}
+
+<div style="display:flex; margin-top: 20px; margin-bottom: 20px;">
+    <form style="width: 25%;" method="get">
+        <label for="Group">Класс:</label>
+        <select id="group" name="groupId" style="height: 50px;" onchange="this.form.submit()">
+            <option value="">Все классы</option>
+            @if (Groups != null)
+            {
+                foreach (var group in Groups)
+                {
+                    <option value="@group">@group</option>
+                }
+            }
+        </select>
+    </form>
+    <form style="width: 25%;" method="get">
+        <label for="Student">Класс:</label>
+        <select id="student" name="studentId" style="height: 50px;" onchange="this.form.submit()">
+            <option value="">Все ученики</option>
+            @if (Students != null)
+            {
+                foreach (var student in Students)
+                {
+                    <option value="@student">@student</option>
+                }
+            }
+        </select>
+    </form>
+    <div style="width: 50%;">
+        <input type="submit" class="button_event" style="margin-top: auto;width: 120px" value="Добавить" />
+        <input type="submit" class="button_event" style="margin-top: auto;width: 250px" value="Изменить/удалить" />
+    </div>
+</div>
+
+<div style="margin-top: 20px;" class="scrollable-table-container">
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2" style="width: 5%;">Класс</th>
+                <th rowspan="2" style="width: 5%;">№</th>
+                <th rowspan="2" style="width: 20%;">Студент</th>
+                <th>Оценки</th>
+                <th rowspan="2" style="width: 10%;">Средний балл</th>
+                <th rowspan="2" style="width: 10%;">Итоговая оценка</th>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            @foreach (var date in ViewBag.Dates)
+                            {
+                                <th style="width:auto">@date.ToString("dd.MM")</th>
+                            }
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (Model != null)
+                {
+                    int studentNumber = 1;
+                    var groupedByGroup = Model.GroupBy(x => x.Group);
+                    foreach (var group in groupedByGroup)
+                    {
+                        <tr>
+                            <td>@group.Key</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        foreach (var studentGroup in group.GroupBy(x => x.Student))
+                        {
+                            decimal averageEstimation = Math.Round(studentGroup.Average(x => (decimal)x.Estimation), 2);
+                            int finalEstimation = (int)Math.Round(averageEstimation, MidpointRounding.AwayFromZero);
+                            var firstStudent = studentGroup.First();
+                            <tr>
+                                <td></td>
+                                <td>@studentNumber</td>
+                                <td>@firstStudent.Student</td>
+                                <td>
+                                    <table style="width:100%" >
+                                        <tr>
+                                            @foreach (var date in ViewBag.Dates)
+                                            {
+                                                var estimationForDate = studentGroup.FirstOrDefault(x => x.Date == date)?.Estimation;
+                                                <td style="text-align:center">
+                                                    @if (estimationForDate.HasValue)
+                                                    {
+                                                        <span style="color:#2b62d1">@estimationForDate.ToString()</span>
+                                                    }
+                                                </td>
+                                            }
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td>@averageEstimation.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                <td>@finalEstimation</td>
+                            </tr>
+                            studentNumber++;
+                        }
+                    }
+                }
+            }
+            <tr>
+                <td colspan="4" style="text-align:left; font-weight:bold;">Итог:</td>
+                <td style="font-weight:bold;">@totalAverage.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td style="font-weight:bold;">@totalFinal</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

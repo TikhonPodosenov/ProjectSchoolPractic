@@ -1,0 +1,43 @@
+﻿@model IEnumerable< ProjectSchool.Models.News>
+@{
+    ViewData["Title"] = "Новости";
+}
+
+@section Header {
+    <heading style="flex:1; text-align: center; margin:0;">Новости</heading>
+    <div style="display: flex; float: right; padding: 10px; width: 60%;">
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicMagazine">Электронный дневник</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicSchedule">Расписание</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Reviews">Отзывы о школе</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Teachers">Учителя</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicProfile">Профиль</a>
+        </nav>
+    </div>
+}
+
+<div>
+    <table>
+        <tr>
+            <th>Дата</th>
+            <th>Новость</th>
+        </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Date</td>
+            <td>@item.News_</td>
+        </tr>
+    }
+    </table>
+</div>
+
+

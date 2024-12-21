@@ -1,0 +1,120 @@
+﻿@model IEnumerable< ProjectSchool.Models.ElectronicMagazine>
+@{
+    ViewData["Title"] = "Электронный дневник";
+    List<string> Subjects = @ViewBag.Subjects;
+    List<DateOnly> Dates = @ViewBag.Dates;
+    decimal totalAverage = 0;
+    int totalFinal = 0;
+    if (Model != null)
+    {
+        totalAverage = Math.Round(Model.Average(x => (decimal)x.Estimation), 2);
+        totalFinal = (int)Math.Round(totalAverage, MidpointRounding.AwayFromZero);
+    }
+}
+
+
+@section Header {
+    <heading style="flex:1; text-align: center; margin:0;">Электронный дневник</heading>
+    <div style="display: flex; float: right; padding: 10px; width: 60%;">
+        <nav class="element_link_row">
+            <a href="/Schedule">Расписание</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/News">Новости</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Reviews">Отзывы о школе</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Teachers">Учителя</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicProfile">Профиль</a>
+        </nav>
+    </div>
+}
+
+<div style="display:flex; margin-top: 20px; margin-bottom: 20px;">
+    <form style="float: left; width: 50%;" method="get">
+        <label for="Subject">Предмет:</label>
+        <select id="subject" name="subjectId" style="width: calc(100% - 200px); height: 50px;" onchange="this.form.submit()">
+            <option value="">Все предметы</option>
+            @if (Subjects != null)
+            {
+                foreach (var subject in Subjects)
+                {
+                    <option value="@subject">@subject</option>
+                }
+            }
+        </select>
+    </form>
+</div>
+
+<div style="margin-top: 20px;">
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2">№</th>
+                <th rowspan="2">Предметы</th>
+                <th>Оценки</th>
+                <th rowspan="2">Средний балл</th>
+                <th rowspan="2">Итоговая оценка</th>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            @foreach (var item in ViewBag.Dates)
+                            {
+                                <th style="width:auto">@item.ToString("dd.MM")</th>
+                            }
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (Model != null)
+                {
+                    int rowNumber = 1;
+                    var groupedBySubject = Model.GroupBy(x => x.Subject);
+                    foreach (var subjectGroup in groupedBySubject)
+                    {
+                        decimal averageEstimation = Math.Round(subjectGroup.Average(x => (decimal)x.Estimation), 2);
+                        int finalEstimation = (int)Math.Round(averageEstimation, MidpointRounding.AwayFromZero);
+
+                        <tr>
+                            <td>@rowNumber</td>
+                            <td>@subjectGroup.Key</td>
+                            <td>
+                                <table style="width:100%">
+                                    <tr>
+                                        @foreach (var date in ViewBag.Dates)
+                                        {
+                                            var estimationForDate = subjectGroup.FirstOrDefault(x => x.Date == date)?.Estimation;
+                                            <td style="text-align:center">
+                                                @if (estimationForDate.HasValue)
+                                                {
+                                                    <span style="color:#2b62d1">@estimationForDate.ToString()</span>
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>@averageEstimation.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                            <td>@finalEstimation</td>
+                        </tr>
+                        rowNumber++;
+                    }
+                }
+            }
+            <tr>
+                <td colspan="3" style="text-align:left;">Итог:</td>
+                <td>@totalAverage.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td>@totalFinal</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

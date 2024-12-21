@@ -1,0 +1,129 @@
+﻿@model IEnumerable< ProjectSchool.Models.Schedule>
+@{
+    ViewData["Title"] = "Расписание";
+    List<string> Subjects = @ViewBag.Subjects;
+    List<string> Groups = @ViewBag.Groups;
+    List<string> Days = @ViewBag.Days;
+}
+
+
+@section Header {
+    <heading style="flex:1; text-align: center; margin:0;">Расписание</heading>
+
+    <div style="display: flex; float: right; padding: 10px; width: 60%;">
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicMagazine">Электронный дневник</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicNews">Новости</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Reviews">Отзывы о школе</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Teachers">Учителя</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicProfile">Профиль</a>
+        </nav>
+    </div>
+}
+
+<div style="display:flex; margin-top: 20px; margin-bottom: 20px;">
+
+    @{
+        <form style="float: left; width: 33%;" method="get">
+            <label for="Subject">Выбрать предмет:</label>
+            <select id="subject" name="subjectId" style="width: calc(100% - 200px); height: 50px;" onchange="this.form.submit()">
+                <option value="">Все предметы</option>
+                @if (Subjects != null)
+                {
+                    foreach (var subject in Subjects)
+                    {
+                        <option value="@subject">@subject</option>
+                    }
+                }
+            </select>
+        </form>
+        <form style="flex:1; width: 33%;" method="get">
+            <label for="Group">Выбрать класс:</label>
+            <select id="group" name="groupId" style="width: calc(100% - 200px); height: 50px;" onchange="this.form.submit()">
+                <option value="">Все классы</option>
+                @if (Groups != null)
+                {
+                    foreach (var group in Groups)
+                    {
+                        <option value="@group">@group</option>
+                    }
+                }
+            </select>
+        </form>
+        <form style="float: right; width: 33%;" method="get">
+            <label for="Day">Выбрать день недели:</label>
+            <select id="day" name="dayId" style="width: calc(100% - 200px); height: 50px;" onchange="this.form.submit()">
+                <option value="">Все дни</option>
+                @if (Days != null)
+                {
+                    foreach (var day in Days)
+                    {
+                        <option value="@day">@day</option>
+                    }
+                }
+            </select>
+        </form>
+    }
+</div>
+
+<div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Класс</th>
+                <th>№</th>
+                @foreach (var day in Days)
+                {
+                    <th>@day</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Groups != null)
+            {
+                @foreach (var group in Groups)
+                {
+                    bool firstRow = true;
+                    var groupSchedule = Model
+                    .Where(i => i.Group == group)
+                    .OrderBy(i => i.NumberSubject)
+                    .ToList();
+
+                    @foreach (var scheduleItem in groupSchedule)
+                    {
+                        <tr>
+                            @if (firstRow)
+                            {
+                                <td rowspan="@groupSchedule.Count()">@group</td>
+                                { firstRow = false; }
+                            }
+                            <td>@scheduleItem.NumberSubject</td>
+                            @foreach (var day in Days)
+                            {
+                                <td>
+                                    @if (Model != null)
+                                    {
+                                        var subjectItem = Model.FirstOrDefault(item => item.Group == group && item.Day == day && item.NumberSubject == scheduleItem.NumberSubject);
+                                        if (subjectItem != null)
+                                        {
+                                            @subjectItem.Subject
+                                            ;
+                                        }
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>

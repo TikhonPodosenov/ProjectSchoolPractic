@@ -1,0 +1,73 @@
+﻿@model IEnumerable< ProjectSchool.Models.Teachers>
+@{
+    ViewData["Title"] = "Учителя";
+    List<string> Subjects = @ViewBag.Subjects;
+    List<string> FIOs = ViewBag.FIOs;
+}
+
+@section Header {
+    <heading style="flex:1; text-align: center; margin:0;">Учителя</heading>
+
+    <div style="display: flex; float: right; padding: 10px; width: 60%;">
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicMagazine">Электронный дневник</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicSchedule">Расписание</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicNews">Новости</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="/Reviews">Отзывы о школе</a>
+        </nav>
+        <nav class="element_link_row">
+            <a href="@ViewBag.targetUrlElectronicProfile">Профиль</a>
+        </nav>
+    </div>
+}
+
+<div style="display: flex; margin-top: 25px; margin-bottom: 25px;">
+    <form style="float: left; width: 50%;" method="get">
+        <label for="Subject">Выберите предмет:</label>
+        <select id="subject" name="subjectId" style="width: calc(100% - 200px); height: 50px;" onchange="this.form.submit()">
+            <option value="" selected>Все предметы</option>
+            @if (Subjects != null)
+            {
+                foreach (var sub in Subjects)
+                {
+                    <option value="@sub">@sub</option>
+                     @* <option value="@sub" @(ViewBag.subject_select == sub ? "selected" : null)>@sub</option> *@
+                }
+            }
+        </select>
+    </form>
+    <form style="float: left; width: 50%;" method="get">
+        <label for="FIO">Выберите ФИО:</label>
+        <select id="fio" name="fioId" style="width: calc(100% - 200px); height: 50px;" onchange="this.form.submit()">
+            <option value="">Все ФИО</option>
+            @if (FIOs != null)
+            {
+                foreach (var teacher in FIOs)
+                {
+                    <option value="@teacher">@teacher</option>
+                }
+            }
+        </select>
+    </form>
+</div>
+<div>
+    <table>
+        <tr>
+            <th>ФИО</th>
+            <th>Предмет</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FIO</td>
+                <td>@item.Subject</td>
+            </tr>
+        }
+    </table>
+</div>
